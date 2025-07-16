@@ -5,7 +5,7 @@ from googletrans import Translator
 translator = Translator()
 
 user_data = {}
-bot = telebot.TeleBot("8187080529:AAGpjk_0BJRf-V3oGf-pK58lOAE21CI69zQ")
+bot = telebot.TeleBot("Your token")
 
 @bot.message_handler(commands=['start'])
 def start(message):
