@@ -1,6 +1,6 @@
 # 🐍 My Third Python Project
 
-Hello! This is my second Python terminal project.
+Hello! This is my third Python terminal project.
 
 This program is **Scientific Calculator**
 
