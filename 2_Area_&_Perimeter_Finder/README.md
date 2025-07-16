@@ -1,6 +1,6 @@
 # 🐍 My Second Python Project
 
-Hello! This is my second Python project.
+Hello! This is my second Python terminal project.
 
 This program can **calculate the perimeter and area**, and **display the figure** —  
 such as **rectangles**, **circles**, **squares**, **triangles**, **pentagons**, and **hexagons**.
