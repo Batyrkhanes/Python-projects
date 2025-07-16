@@ -58,7 +58,7 @@ def get_rooms(message):
           except Exception:
               translated_title = title_text + " (translation failed)"
 
-          bot.send_message(message.chat.id, f"Title: {translated_title}\nPrice: {price_text}")
+          bot.send_message(message.chat.id, f"Title: {translated_title}\nPrice: {price_text} (tenge)")
 
           count += 1
       if count >= 8:
