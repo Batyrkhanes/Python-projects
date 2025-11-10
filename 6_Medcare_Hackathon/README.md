@@ -20,7 +20,7 @@ This project is a comprehensive healthcare management system, combining a **web 
 - **Activity Log:** full action history, last 10 actions, timestamps  
 
 #### Admin Panel Features
-- **Access Control:** password-protected login, admin ID-based special access  
+- **Access Control:** password-protected login, admin ID-based special access.
 - **Appointment Management:** view active appointments, check status, manage queue  
 - **Schedule Management:** configure slots, update work schedule, synchronize with MIS (mock)  
 - **Broadcasts:** send notifications to patients, system alerts  
@@ -148,6 +148,38 @@ pip install Werkzeug
 ```bash
 pip install python-dotenv
 ```
+
+## 🚀 How to Run the Project
+After installing all required libraries, you can run the Telegram bot or the web platform.
+
+### Telegram Bot
+To start the bot, you need to provide the **Telegram Bot token** and set **doctor's name**, **support phone**, **support email**, **admin password**, **admin ID** in bot.py file:
+
+BOT_TOKEN = "BOT_TOKEN_Here" 
+
+PECIALIST_NAME = "Specialist Name Here" 
+
+SUPPORT_PHONE = "Phone_Number_Here"
+
+SUPPORT_EMAIL = "Email_Address_Here"
+
+ADMIN_PASSWORD = "Create_Admin_password_Here" 
+
+ADMIN_ID = "Create_Admin_ID_Here"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ************
 
 ##  Thank you for your attention! 😊 Made with ❤️ using Python.
