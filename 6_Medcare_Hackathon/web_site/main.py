@@ -16,12 +16,10 @@ osms = OSMSService()
 
 @app.route('/')
 def index():
-    # Show main page
     return render_template('index.html', cache_buster=os.urandom(12).hex())
 
 @app.route('/login', methods=['POST'])
 def login():
-    # Handle user login
     data = request.json
     email = data.get('email')
     password = data.get('password')
@@ -36,12 +34,11 @@ def login():
         })
     return jsonify({
         'success': False,
-        'error': 'Invalid email or password'
+        'error': 'Неверный email или пароль'
     }), 401
 
 @app.route('/register', methods=['POST'])
 def register():
-    # Handle user registration
     data = request.json
     email = data.get('email')
     password = data.get('password')
@@ -51,7 +48,7 @@ def register():
     if db.get_web_user(email):
         return jsonify({
             'success': False,
-            'error': 'User with this email already exists'
+            'error': 'Пользователь с таким email уже существует'
         }), 400
         
     password_hash = generate_password_hash(password)
@@ -67,35 +64,31 @@ def register():
 
 @app.route('/dashboard')
 def dashboard():
-    # Show dashboard page only for logged-in users
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('dashboard.html')
 
 @app.route('/logout')
 def logout():
-    # Log out and clear session
     session.clear()
     return redirect(url_for('index'))
 
 @app.route('/api/user/link-telegram', methods=['POST'])
 def link_telegram():
-    # Link user account with Telegram ID
     if 'user_id' not in session:
-        return jsonify({'success': False, 'error': 'Not authorized'}), 401
+        return jsonify({'success': False, 'error': 'Не авторизован'}), 401
         
     data = request.json
     telegram_id = data.get('telegram_id')
     
     if not telegram_id:
-        return jsonify({'success': False, 'error': 'Telegram ID missing'}), 400
+        return jsonify({'success': False, 'error': 'Не указан Telegram ID'}), 400
         
     db.link_telegram_to_web(session['user_id'], telegram_id)
     return jsonify({'success': True})
 
 @app.route('/api/patients', methods=['GET'])
 def get_patients():
-    # Return list of all patients
     try:
         patients = db.get_patients()
         return jsonify({'success': True, 'patients': patients})
@@ -104,20 +97,18 @@ def get_patients():
 
 @app.route('/api/patients', methods=['POST'])
 def add_patient():
-    # Add new patient and analyze health data
     try:
         if 'user_id' not in session:
-            return jsonify({'success': False, 'error': 'Not authorized'}), 401
+            return jsonify({'success': False, 'error': 'Не авторизован'}), 401
             
         data = request.json
         user_id = session['user_id']
         
-        # Get user data
+    # Get user data
         user = db.get_web_user_by_id(user_id)
         if not user:
-            return jsonify({'success': False, 'error': 'User not found'}), 404
+            return jsonify({'success': False, 'error': 'Пользователь не найден'}), 404
         
-        # Calculate health priority level
         priority = 5
         temp = float(data.get('temperature', 0) or 0)
         hr = int(data.get('heart_rate', 0) or 0)
@@ -128,9 +119,8 @@ def add_patient():
         elif temp > 38 or hr > 100 or hr < 60:
             priority = 6
         
-        status = 'Critical' if priority >= 8 else 'Urgent' if priority >= 5 else 'Planned'
+        status = 'Критическое' if priority >= 8 else 'Срочно' if priority >= 5 else 'Плановое'
         
-        # AI health analysis
         ai_analysis = ai.analyze_patient(data)
         
         patient_data = {
@@ -148,20 +138,20 @@ def add_patient():
             'telegram_user_id': user.get('telegram_user_id')
         }
         
-        # Save patient in database
+    # Save patient
         patient_id = db.add_patient(patient_data)
         
-        # Send Telegram notification if linked
+    # If user has linked Telegram, send notification
         if patient_data['telegram_user_id']:
             appointment_data = {
                 'telegram_user_id': patient_data['telegram_user_id'],
                 'iin': patient_data['iin'],
-                'specialist': data.get('specialist', 'Therapist'),
+                'specialist': data.get('specialist', 'Терапевт'),
                 'appointment_date': data.get('appointment_date'),
                 'appointment_time': data.get('appointment_time'),
                 'patient_id': patient_id
             }
-            # Sync with Telegram bot
+            # Sync with bot
             bot_api.sync_appointment_to_telegram(appointment_data)
         
         return jsonify({
@@ -174,7 +164,6 @@ def add_patient():
 
 @app.route('/api/patients/<int:patient_id>', methods=['DELETE'])
 def delete_patient(patient_id):
-    # Delete patient by ID
     try:
         success = db.delete_patient(patient_id)
         return jsonify({'success': success})
@@ -183,7 +172,6 @@ def delete_patient(patient_id):
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    # Chat with AI assistant
     try:
         data = request.json
         message = data.get('message', '')
@@ -208,22 +196,22 @@ def chat():
 
 @app.route('/api/osms/calculate', methods=['POST'])
 def calculate_osms():
-    # Calculate OSMS (health insurance) payments
     try:
         data = request.json
         income = float(data.get('income', 0))
         employment_status = data.get('employment_status', 'individual')
         services = data.get('services', [])
         
-        # Calculate monthly payment
+    # Calculate monthly payment
         monthly_payment = osms.calculate_payment(income, employment_status)
         
-        # Calculate service cost and coverage
+        # Calculate services cost and savings
         total_cost = 0
         for service in services:
             total_cost += osms.get_service_cost(service)
             
-        covered_services = osms.get_covered_services('Insured')
+        # Get list of covered services
+        covered_services = osms.get_covered_services('Застрахован')
         
         return jsonify({
             'success': True,
@@ -236,11 +224,10 @@ def calculate_osms():
 
 @app.route('/api/osms/status', methods=['GET'])
 def check_osms_status():
-    # Check OSMS insurance status by IIN
     try:
         iin = request.args.get('iin')
         if not iin:
-            return jsonify({'success': False, 'error': 'IIN is missing'}), 400
+            return jsonify({'success': False, 'error': 'ИИН не указан'}), 400
             
         result = osms.check_osms_status(iin)
         return jsonify(result)
@@ -249,7 +236,6 @@ def check_osms_status():
 
 @app.route('/api/chat/history', methods=['GET'])
 def get_chat_history():
-    # Get previous chat history
     try:
         user_id = session.get('user_id', 'web_user')
         history = db.get_chat_history(user_id)
@@ -259,7 +245,6 @@ def get_chat_history():
 
 @app.route('/api/chat/clear', methods=['POST'])
 def clear_chat():
-    # Clear chat history
     try:
         user_id = session.get('user_id', 'web_user')
         db.clear_chat_history(user_id)
@@ -268,7 +253,6 @@ def clear_chat():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 def run_web():
-    # Run the Flask web app
     app.run(
         host=Config.FLASK_HOST,
         port=Config.FLASK_PORT,
