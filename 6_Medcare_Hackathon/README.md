@@ -65,9 +65,10 @@ We didn't implement all the features listed above, but many of them are included
 
 - Batyrkhan Yessengali (Me) - Telegram Bot Developer - [Github](https://github.com/Batyrkhanes)
 - Arsen - Backend Developer - [Github](https://github.com/Arsen44gnu)
+- Bekarys - Team Leader - [Github](https://github.com/ZenitsuKimori)
 - Abilmansur Aral - SQL Developer
 - Tolegen Azen - Designer
-- Bekarys - Team Leader
+
 
 ---
 
