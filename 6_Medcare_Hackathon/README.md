@@ -169,6 +169,9 @@ ADMIN_PASSWORD = "Create_Admin_password_Here"
 ADMIN_ID = "Create_Admin_ID_Here"
 
 
+### Web Platform
+To start the web site, you need to download directory called web_site. In this directory
+
 
 
 
